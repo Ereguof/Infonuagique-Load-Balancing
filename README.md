@@ -1,51 +1,54 @@
-# Démonstration de laod balancing avec Node.js et HAProxy
+# Documentation du Projet Load Balancing Node.js + HAProxy - TP2 - Question 2
 
-## Vue d'ensemble
-Ce projet démontre l'équilibrage de charge HTTP avec HAProxy et deux serveurs Node.js de démonstration. Toute l'automatisation est gérée par `setup_and_test.sh`.
+## Auteurs
+Joris Felzines et Stéphane Falciola
 
-- Deux instances de `demo_server.js` sont lancées sur les ports 4001 et 4002.
-- HAProxy écoute sur le port 8080 et répartit les requêtes entre les deux serveurs.
-- Les endpoints `/info` et `/health` fournissent des détails sur le serveur et son état de santé.
-- La page de statistiques HAProxy est disponible pour la supervision.
+## Introduction et description du système
+Ce projet, réalisé dans le cadre du TP2 d'Infonuagique (8INF876 - UQAC), illustre les principes fondamentaux de l'équilibrage de charge HTTP à l'aide de HAProxy et de serveurs Node.js. L'objectif est de montrer comment répartir efficacement le trafic entre plusieurs instances d'une application web pour garantir la haute disponibilité et la fiabilité du service.
 
-## Démarrage rapide
+Deux serveurs Node.js identiques (`demo_server.js`) sont lancés sur des ports différents. HAProxy agit comme répartiteur de charge en dirigeant les requêtes entrantes vers l'un ou l'autre serveur selon une stratégie round-robin. Un script d'automatisation (`setup_and_test.sh`) permet de tout installer, configurer et tester automatiquement sur Ubuntu.
 
-1. **Lancer l'installation automatisée :**
-   ```bash
+## Description de l'architecture de l'application
+
+### Code source
+L'application est composée des fichiers principaux suivants :
+- `demo_server.js` : Serveur Node.js permettant de savoir quel serveur répond à la requête
+- `setup_and_test.sh` : Script shell pour installer Node.js, HAProxy, lancer les serveurs et configurer le load balancing
+
+### Fonctionnement du load balancing
+- Deux instances de `demo_server.js` sont lancées sur les ports 4001 et 4002
+- HAProxy écoute sur le port 8080 et répartit les requêtes HTTP entre les deux serveurs
+- La page de statistiques HAProxy est accessible sur le port 8081
+
+## Déploiement et utilisation
+
+### Installation et lancement automatisés sur Ubuntu
+1. Cloner le projet et se placer dans le dossier :
+   ```sh
+   git clone https://github.com/Ereguof/Infonuagique-Load-Balancing.git
+   cd Infonuagique-Load-Balancing
+   ```
+   Ou mettez les fichiers manuellement dans un répertoire de votre choix.
+2. Lancer le script d'installation et de test :
+   ```sh
    bash setup_and_test.sh
    ```
-   Cela va :
-   - Installer Node.js, npm et HAProxy
-   - Démarrer deux serveurs de démonstration (ports 4001 & 4002)
-   - Configurer et redémarrer HAProxy
-   - Exécuter un test d'équilibrage de charge
-   - Afficher le lien vers la page de statistiques HAProxy
+   Ce script :
+   - Installe Node.js, npm et HAProxy
+   - Démarre deux serveurs Node.js sur les ports 4001 et 4002
+   - Configure HAProxy pour répartir le trafic
+   - Exécute un test automatique pour vérifier l'équilibrage de charge
+   - Affiche le lien vers la page de statistiques HAProxy
 
-2. **Démarrage manuel des serveurs (optionnel) :**
-   ```bash
-   PORT=4001 SERVER_NAME=Demo1 node demo_server.js &
-   PORT=4002 SERVER_NAME=Demo2 node demo_server.js &
-   ```
+## Guide utilisateur
+1. Accédez à l'URL locale [http://localhost:8080](http://localhost:8080) pour voir la page web load balancée.
+   ![Serveur 1](images/demo1.png)
+2. Rafraîchissez la page plusieurs fois : le nom du serveur affiché change à chaque requête, illustrant l'équilibrage de charge.
+   ![Serveur 2](images/demo2.png)
+3. On peut surveiller la répartition et l'état des serveurs via la page de statistiques HAProxy : [http://localhost:8081/stats](http://localhost:8081/stats)
+   ![Statistiques HAProxy](images/stats.png)
 
-3. **Accéder aux endpoints :**
-   - Endpoint équilibré : [http://localhost:8080/info](http://localhost:8080/info)
-   - Vérification de santé : [http://localhost:8080/health](http://localhost:8080/health)
-   - Statistiques HAProxy : [http://localhost:8081/stats](http://localhost:8081/stats)
-
-## Arrêter les serveurs
-```bash
+### Arrêt des serveurs
+```sh
 pkill -f demo_server.js
 ```
-
-## Fichiers
-- `demo_server.js` : Serveur Node.js avec les endpoints `/info` et `/health`
-- `setup_and_test.sh` : Script d'installation et de test automatisé
-
-## Prérequis
-- Ubuntu (testé)
-- Node.js & npm
-- HAProxy
-
----
-
-N'hésitez pas à modifier `demo_server.js` pour des démonstrations plus avancées !

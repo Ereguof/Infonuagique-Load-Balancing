@@ -42,13 +42,10 @@ sudo systemctl restart haproxy
 sleep 2
 
 # On envoie 10 requêtes pour vérifier que le load balancing fonctionne
-RESPONSES=""
-for i in {1..10}; do
-  RESPONSES+="$(curl -s http://localhost:8080/info)\n"
-done
 
-echo "Résultats du test de répartition de charge :"
-echo -e "$RESPONSES" | grep message
+for i in {1..10}; do
+  curl -s http://localhost:8080/
+done
 
 # On met le lien des stats HAProxy à la fin
 echo "Accédez aux statistiques de HAProxy à l'adresse : http://localhost:8081/stats"
