@@ -11,7 +11,8 @@ PORT=4002 SERVER_NAME=Demo2 nohup node demo_server.js > demo2.log 2>&1 &
 sleep 2
 
 # Configuration de HAProxy, on utilise ici une stratégie de round-robin pour le load balancing sur le port 8080
-echo "global
+sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<EOF
+global
     daemon
     maxconn 256
 
@@ -35,17 +36,17 @@ listen stats
     stats enable
     stats uri /stats
     stats refresh 10s
-" | sudo tee /etc/haproxy/haproxy.cfg
+EOF
 
 # Redémarrage de HAProxy pour prendre en compte la nouvelle configuration + attente pour s'assurer qu'il est bien lancé
 sudo systemctl restart haproxy
 sleep 2
 
 # On envoie 10 requêtes pour vérifier que le load balancing fonctionne
-
 for i in {1..10}; do
-  curl -s http://localhost:8080/
+    curl -s http://localhost:8080/ > /dev/null
 done
 
-# On met le lien des stats HAProxy à la fin
+# On met la page principale et le lien des stats HAProxy à la fin
+echo "Accédez à la page web load balancée à l'adresse : http://localhost:8080/"
 echo "Accédez aux statistiques de HAProxy à l'adresse : http://localhost:8081/stats"
